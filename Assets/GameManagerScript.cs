@@ -6,6 +6,7 @@ public class GameManagerScript : MonoBehaviour
 {
 	// 配列の宣言
 	int[] map;
+	/*int[,] map;*/
 
 	/// <summary>
 	/// 配列の出力
@@ -14,7 +15,13 @@ public class GameManagerScript : MonoBehaviour
 	{
 		string debugText = "";
 		for(int i = 0; i < map.GetLength(0); i++)
+		/* for(int y = ; y < map.GetLength(0); y++) */
 		{
+			/*for(int x = 0; x < map.GetLength(1); x++)
+			{
+				deebugText += map.[y,x].ToString() + ", ";
+			}
+			debugText += "\n";	// 改行*/
 			debugText += map[i].ToString() + ", ";
 		}
 		Debug.Log(debugText);
@@ -36,6 +43,13 @@ public class GameManagerScript : MonoBehaviour
 		return -1;
 	}
 
+	/// <summary>
+	/// 数字の移動
+	/// </summary>
+	/// <param name="number">現在の値</param>
+	/// <param name="moveFrom">移動先</param>
+	/// <param name="moveTo">現在地</param>
+	/// <returns>移動ができたかどうか</returns>
 	bool MoveNumber(int number, int moveFrom, int moveTo)
 	{
 		// 移動先が範囲外なら移動不可
@@ -67,6 +81,11 @@ public class GameManagerScript : MonoBehaviour
 	{
 		// 配列の実態の作成と初期化
 		map = new int[]{ 0, 0, 2, 1, 2, 0, 2, 2, 0 };
+		/*map = new int[,] {
+			{ 0, 0, 0, 0, 0 },
+			{ 0, 0, 1, 0, 0 },
+			{ 0, 0, 0, 0, 0 },
+		};*/ 
 
 		//Debug.Log("Hello world!");
 
