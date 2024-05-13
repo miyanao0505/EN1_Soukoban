@@ -11,6 +11,9 @@ public class GameManagerScript : MonoBehaviour
 	GameObject[,] field;    // ゲーム管理用の配列
     public GameObject playerPrefab;
 	public GameObject boxPrefab;
+	public GameObject goalPrefab;
+
+	public GameObject clearText;
 
     /// <summary>
     /// 配列の出力
@@ -132,13 +135,13 @@ public class GameManagerScript : MonoBehaviour
 	{
 		// 配列の実態の作成と初期化
 		map = new int[,] {
-			{ 0, 0, 0, 3, 0, 0, 0, 0, 0 },
-			{ 0, 0, 0, 0, 0, 0, 2, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 3, 2, 0, 0, 1, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 2, 0, 0, 0, 0 },
-            { 0, 0, 0, 2, 0, 0, 0, 0, 0 },
-            { 0, 0, 3, 0, 0, 0, 0, 0, 3 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 3, 2, 0, 0, 0, 2, 3 },
         };
 		field = new GameObject
 		[
@@ -182,7 +185,14 @@ public class GameManagerScript : MonoBehaviour
 
 			// 移動処理を関数化
 			MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(1, 0));
-		}
+
+            // もしクリアしていたら
+            if (IsCleard())
+            {
+                // ゲームオブジェクトのSetActiveメソッドを使い有効化
+                clearText.SetActive(true);
+            }
+        }
 
 		// 左に移動
 		if (Input.GetKeyDown(KeyCode.LeftArrow))
@@ -192,7 +202,14 @@ public class GameManagerScript : MonoBehaviour
 
 			// 移動処理を関数化
 			MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(-1, 0));
-		}
+
+            // もしクリアしていたら
+            if (IsCleard())
+            {
+                // ゲームオブジェクトのSetActiveメソッドを使い有効化
+                clearText.SetActive(true);
+            }
+        }
 
 		// 上に移動
 		if(Input.GetKeyDown(KeyCode.UpArrow))
@@ -202,7 +219,14 @@ public class GameManagerScript : MonoBehaviour
 
 			// 移動処理を関数化
 			MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(0, -1));
-		}
+
+            // もしクリアしていたら
+            if (IsCleard())
+            {
+                // ゲームオブジェクトのSetActiveメソッドを使い有効化
+                clearText.SetActive(true);
+            }
+        }
 
 		// 下に移動
 		if( Input.GetKeyDown(KeyCode.DownArrow))
@@ -212,12 +236,13 @@ public class GameManagerScript : MonoBehaviour
 
 			// 移動処理を関数化
 			MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(0, 1));
-		}
 
-		// もしクリアしていたら
-		if(IsCleard())
-		{
-			Debug.Log("Clear");
-		}
+            // もしクリアしていたら
+            if (IsCleard())
+            {
+                // ゲームオブジェクトのSetActiveメソッドを使い有効化
+                clearText.SetActive(true);
+            }
+        }
 	}
 }
