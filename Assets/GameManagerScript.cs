@@ -169,6 +169,14 @@ public class GameManagerScript : MonoBehaviour
                         Quaternion.identity
                     );
                 }
+				if (map[y, x] == 3)
+				{
+					Instantiate(
+						goalPrefab,
+						IndexToPosition(new Vector2Int(x, y)) + new Vector3(0, 0, 0.01f),
+						Quaternion.identity
+					);
+				}
             }
 			
 		}
