@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor.Compilation;
 using UnityEngine;
 
@@ -93,18 +94,51 @@ public class GameManagerScript : MonoBehaviour
 			0);
 	}
 
+
+	bool IsCleard()
+	{
+		// Vector2Int型の可変長配列の作成
+		List<Vector2Int> goals = new List<Vector2Int>();
+
+		for (int y = 0; y < map.GetLength(0); y++)
+		{
+			for(int x = 0; x < map.GetLength(1); x++)
+			{
+				// 格納場所か否かを判断
+				if (map[y, x] == 3)
+				{
+					// 格納場所のインデックスを控えておく
+					goals.Add(new Vector2Int(x, y));
+				}
+			}
+		}
+
+		// 要素数はgoals.Countで取得
+		for(int i = 0; i < goals.Count; i++) 
+		{
+			GameObject f = field[goals[i].y, goals[i].x];
+			if (f == null || f.tag != "Box")
+			{
+				// 1つでも箱が無かったら条件未達成
+				return false;
+			}
+		}
+		// 条件未達成でなければ条件達成
+		return true;
+	}
+
 	// Start is called before the first frame update
 	void Start()
 	{
 		// 配列の実態の作成と初期化
 		map = new int[,] {
+			{ 0, 0, 0, 3, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 2, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-			{ 0, 2, 0, 0, 0, 0, 0, 0, 2 },
-			{ 0, 2, 0, 0, 0, 0, 0, 2, 0 },
-			{ 0, 2, 0, 0, 1, 0, 2, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 2, 0, 2, 0, 0, 0 },
+			{ 3, 2, 0, 0, 1, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 2, 0, 0, 0, 0 },
+            { 0, 0, 0, 2, 0, 0, 0, 0, 0 },
+            { 0, 0, 3, 0, 0, 0, 0, 0, 3 },
         };
 		field = new GameObject
 		[
@@ -178,6 +212,12 @@ public class GameManagerScript : MonoBehaviour
 
 			// 移動処理を関数化
 			MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(0, 1));
+		}
+
+		// もしクリアしていたら
+		if(IsCleard())
+		{
+			Debug.Log("Clear");
 		}
 	}
 }
