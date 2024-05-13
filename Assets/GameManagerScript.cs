@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEditor.Compilation;
+//using UnityEditor.Compilation;
 using UnityEngine;
 
 public class GameManagerScript : MonoBehaviour
@@ -135,6 +135,8 @@ public class GameManagerScript : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
+		Screen.SetResolution(1280, 720, false);
+
 		// ”z—ñ‚ÌÀ‘Ô‚Ìì¬‚Æ‰Šú‰»
 		map = new int[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
