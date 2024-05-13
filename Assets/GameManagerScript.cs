@@ -78,8 +78,10 @@ public class GameManagerScript : MonoBehaviour
 			if (!success) { return false; }
 		}
 		// プレイヤー・箱関わらずの移動処理
-		field[moveFrom.y, moveFrom.x].transform.position = IndexToPosition(moveTo);
-		field[moveTo.y, moveTo.x] = field[moveFrom.y, moveFrom.x];
+		//field[moveFrom.y, moveFrom.x].transform.position = IndexToPosition(moveTo);
+		Vector3 moveToPosition = IndexToPosition(moveTo);
+		field[moveFrom.y, moveFrom.x].GetComponent<Move>().MoveTo(moveToPosition);
+        field[moveTo.y, moveTo.x] = field[moveFrom.y, moveFrom.x];
 		field[moveFrom.y, moveFrom.x] = null;
 		return true;
 	}
