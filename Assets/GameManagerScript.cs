@@ -7,9 +7,9 @@ using UnityEngine;
 public class GameManagerScript : MonoBehaviour
 {
 	// 配列の宣言
-	int[,] map;					// レベルデザイン用の配列
-	GameObject[,] field;		// ゲーム管理用の配列
-	GameObject[,] goals;		// ゴール管理用の配列
+	int[,] map;												// レベルデザイン用の配列
+	GameObject[,] field;									// ゲーム管理用の配列
+	List<GameObject> goals = new List<GameObject>();		// ゴール管理用のリスト
 	public GameObject playerPrefab;
 	public GameObject boxPrefab;
 	public GameObject goalPrefab;
@@ -136,22 +136,23 @@ public class GameManagerScript : MonoBehaviour
 	private void Reset()
 	{
 		// 現在のフィールド削除
-		/*for(int y = 0; y < map.GetLength(0); y++)
+		for (int y = 0; y < map.GetLength(0); y++)
 		{
-			for(int x = 0; x < map.GetLength(1); x++)
+			for (int x = 0; x < map.GetLength(1); x++)
 			{
 				Destroy(field[y, x]);
-				Destroy(goals[y, x]);
 			}
-		}*/
-
-		foreach(Transform child in this.transform)
+		}
+		for(int i = 0; i < goals.Count; i++)
 		{
-			Destroy(child.gameObject);
+			Destroy(goals[i]);
 		}
 
 		// フィールドのリセット
 		Start();
+
+		// ゲームオブジェクトのSetActiveメソッドを使い無効化
+		clearText.SetActive(false);
 	}
 
 	// Start is called before the first frame update
@@ -170,11 +171,6 @@ public class GameManagerScript : MonoBehaviour
 			{ 0, 0, 3, 2, 0, 0, 0, 2, 3 },
 		};
 		field = new GameObject
-		[
-			map.GetLength(0),
-			map.GetLength(1)
-		];
-		goals = new GameObject
 		[
 			map.GetLength(0),
 			map.GetLength(1)
@@ -202,11 +198,11 @@ public class GameManagerScript : MonoBehaviour
 				}
 				if (map[y, x] == 3)
 				{
-					goals[y, x] = Instantiate(
+                    goals.Add(Instantiate(
 						goalPrefab,
 						IndexToPosition(new Vector2Int(x, y)) + new Vector3(0, 0, 0.01f),
 						Quaternion.identity
-					);
+					));
 				}
 			}
 			
