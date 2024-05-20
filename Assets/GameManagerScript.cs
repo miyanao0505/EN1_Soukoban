@@ -7,31 +7,14 @@ using UnityEngine;
 public class GameManagerScript : MonoBehaviour
 {
 	// 配列の宣言
-	int[,] map;             // レベルデザイン用の配列
-	GameObject[,] field;    // ゲーム管理用の配列
-    public GameObject playerPrefab;
+	int[,] map;					// レベルデザイン用の配列
+	GameObject[,] field;		// ゲーム管理用の配列
+	GameObject[,] goals;		// ゴール管理用の配列
+	public GameObject playerPrefab;
 	public GameObject boxPrefab;
 	public GameObject goalPrefab;
 
 	public GameObject clearText;
-
-    /// <summary>
-    /// 配列の出力
-    /// </summary>
-    void PrintArray()
-	{
-		/*string debugText = "";
-		// 二重for文で2次元配列の情報を出力
-		for (int y = 0; y < map.GetLength(0); y++) 
-		{
-			for(int x = 0; x < map.GetLength(1); x++)
-			{
-				debugText += map[y,x].ToString() + ", ";
-			}
-			debugText += "\n";	// 改行
-		}
-		Debug.Log(debugText);*/
-	}
 
 	/// <summary>
 	/// プレイヤーのインデックスを取得する
@@ -81,7 +64,7 @@ public class GameManagerScript : MonoBehaviour
 		//field[moveFrom.y, moveFrom.x].transform.position = IndexToPosition(moveTo);
 		Vector3 moveToPosition = IndexToPosition(moveTo);
 		field[moveFrom.y, moveFrom.x].GetComponent<Move>().MoveTo(moveToPosition);
-        field[moveTo.y, moveTo.x] = field[moveFrom.y, moveFrom.x];
+		field[moveTo.y, moveTo.x] = field[moveFrom.y, moveFrom.x];
 		field[moveFrom.y, moveFrom.x] = null;
 		return true;
 	}
@@ -99,11 +82,14 @@ public class GameManagerScript : MonoBehaviour
 			0);
 	}
 
-
+	/// <summary>
+	/// クリアチェック
+	/// </summary>
+	/// <returns></returns>
 	bool IsCleard()
 	{
 		// Vector2Int型の可変長配列の作成
-		List<Vector2Int> goals = new List<Vector2Int>();
+		List<Vector2Int> goalsList = new List<Vector2Int>();
 
 		for (int y = 0; y < map.GetLength(0); y++)
 		{
@@ -113,15 +99,15 @@ public class GameManagerScript : MonoBehaviour
 				if (map[y, x] == 3)
 				{
 					// 格納場所のインデックスを控えておく
-					goals.Add(new Vector2Int(x, y));
+					goalsList.Add(new Vector2Int(x, y));
 				}
 			}
 		}
 
 		// 要素数はgoals.Countで取得
-		for(int i = 0; i < goals.Count; i++) 
+		for(int i = 0; i < goalsList.Count; i++) 
 		{
-			GameObject f = field[goals[i].y, goals[i].x];
+			GameObject f = field[goalsList[i].y, goalsList[i].x];
 			if (f == null || f.tag != "Box")
 			{
 				// 1つでも箱が無かったら条件未達成
@@ -130,6 +116,30 @@ public class GameManagerScript : MonoBehaviour
 		}
 		// 条件未達成でなければ条件達成
 		return true;
+	}
+
+	/// <summary>
+	/// リセット
+	/// </summary>
+	private void Reset()
+	{
+		// 現在のフィールド削除
+		/*for(int y = 0; y < map.GetLength(0); y++)
+		{
+			for(int x = 0; x < map.GetLength(1); x++)
+			{
+				Destroy(field[y, x]);
+				Destroy(goals[y, x]);
+			}
+		}*/
+
+		foreach(Transform child in this.transform)
+		{
+			Destroy(child.gameObject);
+		}
+
+		// フィールドのリセット
+		Start();
 	}
 
 	// Start is called before the first frame update
@@ -143,11 +153,16 @@ public class GameManagerScript : MonoBehaviour
 			{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 3, 2, 0, 0, 1, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 3, 2, 0, 0, 0, 2, 3 },
-        };
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 3, 2, 0, 0, 0, 2, 3 },
+		};
 		field = new GameObject
+		[
+			map.GetLength(0),
+			map.GetLength(1)
+		];
+		goals = new GameObject
 		[
 			map.GetLength(0),
 			map.GetLength(1)
@@ -165,23 +180,23 @@ public class GameManagerScript : MonoBehaviour
 						Quaternion.identity
 					) ;
 				}
-                if (map[y, x] == 2)
-                {
-                    field[y, x] = Instantiate(
-                        boxPrefab,
-                        IndexToPosition(new Vector2Int(x, y)),
-                        Quaternion.identity
-                    );
-                }
+				if (map[y, x] == 2)
+				{
+					field[y, x] = Instantiate(
+						boxPrefab,
+						IndexToPosition(new Vector2Int(x, y)),
+						Quaternion.identity
+					);
+				}
 				if (map[y, x] == 3)
 				{
-					Instantiate(
+					goals[y, x] = Instantiate(
 						goalPrefab,
 						IndexToPosition(new Vector2Int(x, y)) + new Vector3(0, 0, 0.01f),
 						Quaternion.identity
 					);
 				}
-            }
+			}
 			
 		}
 	}
@@ -198,13 +213,13 @@ public class GameManagerScript : MonoBehaviour
 			// 移動処理を関数化
 			MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(1, 0));
 
-            // もしクリアしていたら
-            if (IsCleard())
-            {
-                // ゲームオブジェクトのSetActiveメソッドを使い有効化
-                clearText.SetActive(true);
-            }
-        }
+			// もしクリアしていたら
+			if (IsCleard())
+			{
+				// ゲームオブジェクトのSetActiveメソッドを使い有効化
+				clearText.SetActive(true);
+			}
+		}
 
 		// 左に移動
 		if (Input.GetKeyDown(KeyCode.LeftArrow))
@@ -215,13 +230,13 @@ public class GameManagerScript : MonoBehaviour
 			// 移動処理を関数化
 			MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(-1, 0));
 
-            // もしクリアしていたら
-            if (IsCleard())
-            {
-                // ゲームオブジェクトのSetActiveメソッドを使い有効化
-                clearText.SetActive(true);
-            }
-        }
+			// もしクリアしていたら
+			if (IsCleard())
+			{
+				// ゲームオブジェクトのSetActiveメソッドを使い有効化
+				clearText.SetActive(true);
+			}
+		}
 
 		// 上に移動
 		if(Input.GetKeyDown(KeyCode.UpArrow))
@@ -232,13 +247,13 @@ public class GameManagerScript : MonoBehaviour
 			// 移動処理を関数化
 			MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(0, -1));
 
-            // もしクリアしていたら
-            if (IsCleard())
-            {
-                // ゲームオブジェクトのSetActiveメソッドを使い有効化
-                clearText.SetActive(true);
-            }
-        }
+			// もしクリアしていたら
+			if (IsCleard())
+			{
+				// ゲームオブジェクトのSetActiveメソッドを使い有効化
+				clearText.SetActive(true);
+			}
+		}
 
 		// 下に移動
 		if( Input.GetKeyDown(KeyCode.DownArrow))
@@ -249,12 +264,18 @@ public class GameManagerScript : MonoBehaviour
 			// 移動処理を関数化
 			MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(0, 1));
 
-            // もしクリアしていたら
-            if (IsCleard())
-            {
-                // ゲームオブジェクトのSetActiveメソッドを使い有効化
-                clearText.SetActive(true);
-            }
-        }
+			// もしクリアしていたら
+			if (IsCleard())
+			{
+				// ゲームオブジェクトのSetActiveメソッドを使い有効化
+				clearText.SetActive(true);
+			}
+		}
+
+		// リセット
+		if(Input.GetKeyDown(KeyCode.R))
+		{
+			Reset();
+		}
 	}
 }
