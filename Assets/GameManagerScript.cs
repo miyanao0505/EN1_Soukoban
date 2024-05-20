@@ -9,16 +9,18 @@ public class GameManagerScript : MonoBehaviour
 	// 配列の宣言
 	int[,] map;             // レベルデザイン用の配列
 	GameObject[,] field;    // ゲーム管理用の配列
-    public GameObject playerPrefab;
+	public GameObject playerPrefab;
 	public GameObject boxPrefab;
 	public GameObject goalPrefab;
 
 	public GameObject clearText;
 
-    /// <summary>
-    /// 配列の出力
-    /// </summary>
-    void PrintArray()
+	public GameObject particlePrefab;
+
+	/// <summary>
+	/// 配列の出力
+	/// </summary>
+	void PrintArray()
 	{
 		/*string debugText = "";
 		// 二重for文で2次元配列の情報を出力
@@ -67,8 +69,17 @@ public class GameManagerScript : MonoBehaviour
 	/// <returns>移動ができたかどうか</returns>
 	bool MoveNumber(string tag, Vector2Int moveFrom, Vector2Int moveTo)
 	{
+		for (int i = 0; i < 5; i++)
+		{
+			Instantiate(
+				particlePrefab,
+				IndexToPosition(moveFrom),
+				Quaternion.identity
+			) ;
+		}
+
 		// 移動先が範囲外なら移動不可
-		if(moveTo.y < 0 || moveTo.y >= field.GetLength(0)) { return false; }
+		if (moveTo.y < 0 || moveTo.y >= field.GetLength(0)) { return false; }
 		if(moveTo.x < 0 || moveTo.x >= field.GetLength(1)) { return false; }	
 		// nullチェックをしてからタグのチェックを行う
 		if (field[moveTo.y, moveTo.x] != null && field[moveTo.y, moveTo.x].tag == "Box")
@@ -81,8 +92,9 @@ public class GameManagerScript : MonoBehaviour
 		//field[moveFrom.y, moveFrom.x].transform.position = IndexToPosition(moveTo);
 		Vector3 moveToPosition = IndexToPosition(moveTo);
 		field[moveFrom.y, moveFrom.x].GetComponent<Move>().MoveTo(moveToPosition);
-        field[moveTo.y, moveTo.x] = field[moveFrom.y, moveFrom.x];
+		field[moveTo.y, moveTo.x] = field[moveFrom.y, moveFrom.x];
 		field[moveFrom.y, moveFrom.x] = null;
+
 		return true;
 	}
 
@@ -143,10 +155,10 @@ public class GameManagerScript : MonoBehaviour
 			{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 3, 2, 0, 0, 1, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 3, 2, 0, 0, 0, 2, 3 },
-        };
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 3, 2, 0, 0, 0, 2, 3 },
+		};
 		field = new GameObject
 		[
 			map.GetLength(0),
@@ -165,14 +177,14 @@ public class GameManagerScript : MonoBehaviour
 						Quaternion.identity
 					) ;
 				}
-                if (map[y, x] == 2)
-                {
-                    field[y, x] = Instantiate(
-                        boxPrefab,
-                        IndexToPosition(new Vector2Int(x, y)),
-                        Quaternion.identity
-                    );
-                }
+				if (map[y, x] == 2)
+				{
+					field[y, x] = Instantiate(
+						boxPrefab,
+						IndexToPosition(new Vector2Int(x, y)),
+						Quaternion.identity
+					);
+				}
 				if (map[y, x] == 3)
 				{
 					Instantiate(
@@ -181,7 +193,7 @@ public class GameManagerScript : MonoBehaviour
 						Quaternion.identity
 					);
 				}
-            }
+			}
 			
 		}
 	}
@@ -198,13 +210,13 @@ public class GameManagerScript : MonoBehaviour
 			// 移動処理を関数化
 			MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(1, 0));
 
-            // もしクリアしていたら
-            if (IsCleard())
-            {
-                // ゲームオブジェクトのSetActiveメソッドを使い有効化
-                clearText.SetActive(true);
-            }
-        }
+			// もしクリアしていたら
+			if (IsCleard())
+			{
+				// ゲームオブジェクトのSetActiveメソッドを使い有効化
+				clearText.SetActive(true);
+			}
+		}
 
 		// 左に移動
 		if (Input.GetKeyDown(KeyCode.LeftArrow))
@@ -215,13 +227,13 @@ public class GameManagerScript : MonoBehaviour
 			// 移動処理を関数化
 			MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(-1, 0));
 
-            // もしクリアしていたら
-            if (IsCleard())
-            {
-                // ゲームオブジェクトのSetActiveメソッドを使い有効化
-                clearText.SetActive(true);
-            }
-        }
+			// もしクリアしていたら
+			if (IsCleard())
+			{
+				// ゲームオブジェクトのSetActiveメソッドを使い有効化
+				clearText.SetActive(true);
+			}
+		}
 
 		// 上に移動
 		if(Input.GetKeyDown(KeyCode.UpArrow))
@@ -232,13 +244,13 @@ public class GameManagerScript : MonoBehaviour
 			// 移動処理を関数化
 			MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(0, -1));
 
-            // もしクリアしていたら
-            if (IsCleard())
-            {
-                // ゲームオブジェクトのSetActiveメソッドを使い有効化
-                clearText.SetActive(true);
-            }
-        }
+			// もしクリアしていたら
+			if (IsCleard())
+			{
+				// ゲームオブジェクトのSetActiveメソッドを使い有効化
+				clearText.SetActive(true);
+			}
+		}
 
 		// 下に移動
 		if( Input.GetKeyDown(KeyCode.DownArrow))
@@ -249,12 +261,12 @@ public class GameManagerScript : MonoBehaviour
 			// 移動処理を関数化
 			MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(0, 1));
 
-            // もしクリアしていたら
-            if (IsCleard())
-            {
-                // ゲームオブジェクトのSetActiveメソッドを使い有効化
-                clearText.SetActive(true);
-            }
-        }
+			// もしクリアしていたら
+			if (IsCleard())
+			{
+				// ゲームオブジェクトのSetActiveメソッドを使い有効化
+				clearText.SetActive(true);
+			}
+		}
 	}
 }
