@@ -16,6 +16,8 @@ public class GameManagerScript : MonoBehaviour
 
 	public GameObject clearText;
 
+	public GameObject particlePrefab;
+
 	/// <summary>
 	/// プレイヤーのインデックスを取得する
 	/// </summary>
@@ -50,8 +52,17 @@ public class GameManagerScript : MonoBehaviour
 	/// <returns>移動ができたかどうか</returns>
 	bool MoveNumber(string tag, Vector2Int moveFrom, Vector2Int moveTo)
 	{
+		for (int i = 0; i < 5; i++)
+		{
+			Instantiate(
+				particlePrefab,
+				IndexToPosition(moveFrom),
+				Quaternion.identity
+			) ;
+		}
+
 		// 移動先が範囲外なら移動不可
-		if(moveTo.y < 0 || moveTo.y >= field.GetLength(0)) { return false; }
+		if (moveTo.y < 0 || moveTo.y >= field.GetLength(0)) { return false; }
 		if(moveTo.x < 0 || moveTo.x >= field.GetLength(1)) { return false; }	
 		// nullチェックをしてからタグのチェックを行う
 		if (field[moveTo.y, moveTo.x] != null && field[moveTo.y, moveTo.x].tag == "Box")
@@ -66,6 +77,7 @@ public class GameManagerScript : MonoBehaviour
 		field[moveFrom.y, moveFrom.x].GetComponent<Move>().MoveTo(moveToPosition);
 		field[moveTo.y, moveTo.x] = field[moveFrom.y, moveFrom.x];
 		field[moveFrom.y, moveFrom.x] = null;
+
 		return true;
 	}
 
